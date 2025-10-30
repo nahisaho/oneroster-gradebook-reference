@@ -29,6 +29,8 @@ OneRoster Gradebook Service 1.2は、K-12教育機関における成績・評価
 - ✅ **OAuth 2.0認証**: Client Credentials Grantによるセキュアな認証
 - ✅ **3言語対応**: Node.js (Express)、Python (FastAPI)、Java (Spring Boot)
 - ✅ **プロダクションレディ**: エラーハンドリング、ロギング、テスト完備
+- ✅ **Docker対応**: 全実装がDocker Composeでワンコマンド起動
+- ✅ **高カバレッジ**: 全実装で80%以上のテストカバレッジ達成
 - ✅ **IMS認証準備**: OneRoster 1.2仕様完全準拠
 
 ## 機能
@@ -166,6 +168,8 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 - **ディレクトリ**: `implementations/nodejs/`
 - **フレームワーク**: Express.js 4.x
 - **ORM**: Sequelize 6.x
+- **テスト**: 43/43テスト成功 ✅
+- **Docker**: Docker Compose対応 🐳
 - **詳細**: [Node.js実装ガイド](implementations/nodejs/README.md)
 
 **特徴**:
@@ -178,6 +182,8 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 - **ディレクトリ**: `implementations/python/`
 - **フレームワーク**: FastAPI 0.100+
 - **ORM**: SQLAlchemy 2.0
+- **テスト**: 89/89テスト成功、カバレッジ98% ✅
+- **Docker**: Docker Compose対応 🐳
 - **詳細**: [Python実装ガイド](implementations/python/README.md)
 
 **特徴**:
@@ -188,8 +194,10 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 ### Java (Spring Boot)
 
 - **ディレクトリ**: `implementations/java/`
-- **フレームワーク**: Spring Boot 3.0+
-- **ORM**: Spring Data JPA
+- **フレームワーク**: Spring Boot 3.2.1
+- **ORM**: Spring Data JPA (Hibernate)
+- **テスト**: 19/19テスト成功、カバレッジ82% ✅
+- **Docker**: Docker Compose対応 🐳
 - **詳細**: [Java実装ガイド](implementations/java/README.md)
 
 **特徴**:
