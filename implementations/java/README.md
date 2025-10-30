@@ -272,21 +272,93 @@ mvn clean package -DskipTests
 java -jar target/oneroster-gradebook-1.0.0.jar
 ```
 
+### Docker Deployment
+
+#### 1. Build Application
+
+```bash
+# Build JAR first (required for Docker image)
+mvn clean package -DskipTests
+```
+
+#### 2. Build Docker Image
+
+```bash
+docker compose build
+```
+
+#### 3. Start Services
+
+```bash
+# Start PostgreSQL and application
+docker compose up -d
+
+# View logs
+docker compose logs -f app
+
+# Check health
+curl http://localhost:8082/actuator/health
+```
+
+#### 4. Stop Services
+
+```bash
+docker compose down
+
+# Remove volumes
+docker compose down -v
+```
+
+#### Using Makefile (Recommended)
+
+```bash
+# Build and start
+make build up
+
+# View logs
+make logs
+
+# Run tests in container
+make test
+
+# Stop services
+make down
+
+# See all commands
+make help
+```
+
+### Docker Configuration
+
+- **API Port**: 8082 (mapped to container's 8080)
+- **Database Port**: 5434 (mapped to container's 5432)
+- **Health Check**: http://localhost:8082/actuator/health
+- **Database**: PostgreSQL 15 with persistent volume
+
 ### Docker
 
-Create `Dockerfile`:
+Create `Dockerfile` (see `Dockerfile` in repository):
 
 ```dockerfile
-FROM eclipse-temurin:17-jre
-COPY target/oneroster-gradebook-1.0.0.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+RUN apk add --no-cache curl
+COPY target/*.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
 ```
 
 Build and run:
 
 ```bash
-docker build -t oneroster-gradebook .
-docker run -p 8080:8080 oneroster-gradebook
+# Build JAR first
+mvn clean package -DskipTests
+
+# Build Docker image
+docker compose build
+
+# Run containers
+docker compose up -d
 ```
 
 ## License

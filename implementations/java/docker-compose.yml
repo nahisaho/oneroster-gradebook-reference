@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: oneroster-java-db
+    environment:
+      POSTGRES_DB: oneroster_gradebook
+      POSTGRES_USER: oneroster_user
+      POSTGRES_PASSWORD: oneroster_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Let Hibernate handle schema creation
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oneroster_user -d oneroster_gradebook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oneroster-network
+
+  # Java Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oneroster-java-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/oneroster_gradebook
+      SPRING_DATASOURCE_USERNAME: oneroster_user
+      SPRING_DATASOURCE_PASSWORD: oneroster_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SERVER_PORT: 8080
+      LOGGING_LEVEL_ORG_IMSGLOBAL: DEBUG
+    ports:
+      - "8082:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - oneroster-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+
+networks:
+  oneroster-network:
+    driver: bridge

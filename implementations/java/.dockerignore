@@ -1,0 +1,43 @@
+# Maven
+# Include JAR file for Docker build, but exclude other target contents
+target/*
+!target/*.jar
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Build
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
