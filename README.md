@@ -196,7 +196,7 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 - **ディレクトリ**: `implementations/java/`
 - **フレームワーク**: Spring Boot 3.2.1
 - **ORM**: Spring Data JPA (Hibernate)
-- **テスト**: 19/19テスト成功、カバレッジ82% ✅
+- **テスト**: 63/63テスト成功、カバレッジ98% ✅
 - **Docker**: Docker Compose対応 🐳
 - **詳細**: [Java実装ガイド](implementations/java/README.md)
 

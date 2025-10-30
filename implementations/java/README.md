@@ -1,7 +1,7 @@
 # OneRoster Gradebook API - Java Implementation
 
-[![Tests](https://img.shields.io/badge/Tests-19%2F19%20Passing-brightgreen)](https://github.com/nahisaho/oneroster-gradebook-reference)
-[![Coverage](https://img.shields.io/badge/Coverage-82%25-green)](https://github.com/nahisaho/oneroster-gradebook-reference)
+[![Tests](https://img.shields.io/badge/Tests-63%2F63%20Passing-brightgreen)](https://github.com/nahisaho/oneroster-gradebook-reference)
+[![Coverage](https://img.shields.io/badge/Coverage-98%25-brightgreen)](https://github.com/nahisaho/oneroster-gradebook-reference)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 
 Java/Spring Boot implementation of the IMS Global OneRoster v1.2 Gradebook Service API.
@@ -13,7 +13,7 @@ Java/Spring Boot implementation of the IMS Global OneRoster v1.2 Gradebook Servi
 - **OAuth2 JWT** authentication with scope-based authorization
 - **PostgreSQL** database with JPA/Hibernate ORM
 - **MapStruct** for entity-DTO mapping
-- **Comprehensive testing**: 19/19 tests passing, 82% coverage ✅
+- **Comprehensive testing**: 63/63 tests passing, 98% coverage ✅
 - **Docker support**: One-command deployment with Docker Compose 🐳
 - **API documentation** with Spring Boot Actuator health checks
 
