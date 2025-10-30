@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: oneroster-python-db
+    environment:
+      POSTGRES_DB: oneroster_gradebook
+      POSTGRES_USER: oneroster_user
+      POSTGRES_PASSWORD: oneroster_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../shared/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oneroster_user -d oneroster_gradebook"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oneroster-network
+
+  # Python FastAPI Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oneroster-python-app
+    environment:
+      DATABASE_URL: postgresql://oneroster_user:oneroster_pass@db:5432/oneroster_gradebook
+      ENVIRONMENT: development
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+      OAUTH_CLIENT_TEST_CLIENT: test_secret
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8000
+      RATE_LIMIT_PER_MINUTE: 100
+    ports:
+      - "8001:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./.env:/app/.env
+    networks:
+      - oneroster-network
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+volumes:
+  postgres_data:
+
+networks:
+  oneroster-network:
+    driver: bridge

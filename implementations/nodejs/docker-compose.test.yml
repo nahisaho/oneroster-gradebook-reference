@@ -1,0 +1,49 @@
+services:
+  # PostgreSQL Database for Testing
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: oneroster-postgres-test
+    environment:
+      POSTGRES_DB: oneroster_gradebook_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ../../shared/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+  # Test Runner
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: oneroster-test
+    environment:
+      NODE_ENV: test
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_NAME: oneroster_gradebook_test
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      OAUTH_CLIENT_ID: test_client
+      OAUTH_CLIENT_SECRET: test_secret
+      OAUTH_TOKEN_LIFETIME: 3600
+      LOG_LEVEL: error
+      SUPPRESS_LOGS: "false"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test-network
+    command: npm test
+
+networks:
+  test-network:
+    driver: bridge

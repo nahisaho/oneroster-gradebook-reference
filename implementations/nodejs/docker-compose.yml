@@ -1,0 +1,122 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: oneroster-postgres
+    environment:
+      POSTGRES_DB: oneroster_gradebook
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../shared/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oneroster-network
+
+  # Node.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oneroster-nodejs
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: oneroster_gradebook
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+      DB_POOL_MAX: 10
+      DB_POOL_MIN: 2
+      
+      # OAuth
+      OAUTH_CLIENT_ID: demo_client
+      OAUTH_CLIENT_SECRET: demo_secret_change_in_production
+      OAUTH_TOKEN_LIFETIME: 3600
+      OAUTH_CLIENT_SCOPES: "https://purl.imsglobal.org/spec/or/v1p2/scope/roster.readonly,https://purl.imsglobal.org/spec/or/v1p2/scope/lineitem,https://purl.imsglobal.org/spec/or/v1p2/scope/result"
+      
+      # API
+      API_BASE_URL: http://localhost:3000/ims/oneroster/v1p2
+      ROSTERING_SERVICE_BASE_URL: http://localhost:3001/ims/oneroster/v1p2
+      
+      # Security
+      JWT_SECRET: change-this-secret-in-production
+      BCRYPT_ROUNDS: 10
+      
+      # Logging
+      LOG_LEVEL: info
+      LOG_FILE_ENABLED: true
+      
+      # CORS
+      CORS_ORIGIN: "*"
+      
+      # Rate Limiting
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      
+      # Pagination
+      MAX_PAGE_SIZE: 500
+      DEFAULT_PAGE_SIZE: 100
+      INCLUDE_PAGINATION_METADATA: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - oneroster-network
+    restart: unless-stopped
+
+  # Development Application (with hot reload)
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: oneroster-nodejs-dev
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: oneroster_gradebook
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SYNC: "false"
+      OAUTH_CLIENT_ID: demo_client
+      OAUTH_CLIENT_SECRET: demo_secret
+      OAUTH_TOKEN_LIFETIME: 3600
+      LOG_LEVEL: debug
+      CORS_ORIGIN: "*"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - oneroster-network
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  oneroster-network:
+    driver: bridge
