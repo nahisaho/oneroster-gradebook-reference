@@ -176,6 +176,20 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.11</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude MapStruct generated implementation classes -->
+                        <exclude>**/*MapperImpl.class</exclude>
+                        <!-- Exclude Lombok generated code -->
+                        <exclude>**/model/**/*.class</exclude>
+                        <exclude>**/dto/**/*.class</exclude>
+                        <!-- Exclude Spring Boot main application class -->
+                        <exclude>**/OneRosterGradebookApplication.class</exclude>
+                        <!-- Exclude configuration classes (infrastructure code) -->
+                        <exclude>**/config/SecurityConfig.class</exclude>
+                        <exclude>**/config/WebConfig.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
